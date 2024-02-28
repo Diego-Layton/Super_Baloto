@@ -10,8 +10,33 @@ let numeroboletas = ref("");
 let fecha = ref("");
 let boletas = ref([]);
 let alertax = ref("");
+let showDiv= ref(true);
+let estado = ref("");
+let Iestado = ref(""); 
+let showDisponible=ref(false)
+let showadquirir=ref(false)
+let nombre = ref("");
+let telefono = ref("");
+let bd=true
+let direccion = ref("");
 
+function editar(item, i){
+  this.showDiv = !this.showDiv
+  console.log(item);
+  console.log(i);
+  
+  premio.value = item.premio
+  valorBoleta.value = item.valorBoleta
+  loteria.value = item.loteria
+  fecha.value = item.fecha
+
+  bd=false
+  index=i
+  
+}
 function guardar() {
+if(bd==true){
+
   if (premio.value === "") {
     mostrarError("Debe ingresar la cantidad del premio");
   } else if (valorBoleta.value === "") {
@@ -23,17 +48,36 @@ function guardar() {
   } else if (fecha.value === "") {
     mostrarError("Debe ingresar una fecha que sea después del día de hoy");
   } else {
-    // Lógica para guardar los datos
-    // ...
-
-    // Ejemplo de agregar elementos al array 'boletas'
-    for (let i = 0; i < 100; i++) {
+      mostrarmensaje("Formulario enviado correctamente")
       boletas.value.push({
-        i,
-        estado: 'disponible'
-      });
+        premio: premio.value,
+        valorBoleta: valorBoleta.value,
+        loteria: loteria.value,
+        fecha: fecha.value,
+      })
+      console.log(boletas.value)
     }
+}
+
+else{
+  
+  boletas.value[index].premio=premio.value
+  boletas.value[index].valorBoleta=valorBoleta.value
+  boletas.value[index].loteria=loteria.value
+  boletas.value[index].fecha=fecha.value
+
+  bd=true
+}
+
+  for (let i = 0; i < 100; i++) {
+    boletas.value.push({
+      i,
+      estado: 'disponible'
+    });
   }
+
+  this.showDiv = !this.showDiv
+  
 }
 
 function mostrarError(mensaje) {
@@ -43,18 +87,60 @@ function mostrarError(mensaje) {
     text: "Vuelve e intenta!",
   });
 }
+function mostrarmensaje(mensaje) {
+  Swal.fire({
+    icon: "success",
+    title: mensaje,
+    text: "Bien hecho",
+  });
+}
+
+function modifiicarboleta(e,i){
+if (e.estado=='disponible'){
+  this.showDisponible = !this.showDisponible
+
+}
+
+this.Iestado= i
+}
+
+function adquirir() {
+  this.showDisponible = !this.showDisponible
+  this.showadquirir = !this.showadquirir 
+  
+}
+
+
+
 </script>
 
 <!-- MAQUETADO_________________________________________________________________________________________________ -->
 <template>
   <div class="contenedorPrincipal">
-<div>
-    <button @click="mostrarAlerta">Mostrar Alerta</button>
-  </div>
 
-  <div class="talonario">
+  <div class="talonario" >
+
+    <div class="disponible" v-if="showDisponible"> 
+
+<h3>Boleta {{Iestado}}</h3>
+<h5>Estado: Disponible</h5>
+ <button id="adquirirb" @click="b()">adquirir boleta</button>
+    </div>
+
+
+<div class="adquirir" v-if="showadquirir"> 
+
+<h3>Boleta a Adquirir: {{Iestado}}</h3>
+
+<input type="text" placeholder="Chechito Alimaña" v-model.trim="nombre" />
+<input type="text" placeholder="Telefono" v-model.trim="telefono" />
+<input type="text" placeholder="Direccion" v-model.trim="direccion" />
+
+<button id="adquirir" @click="obtener()">adquirir boleta</button>
+</div>
+
   <header>TALONARIO</header>
-    <div class="configurarTalonario">
+    <div class="configurarTalonario" v-if="showDiv">
       <input type="text" placeholder="Premio" v-model.trim="premio" id="espacio"/>
       <input type="valorBoleta" placeholder="Valor Boleta" v-model.trim="valorBoleta" id="espacio"/>
       <select v-model="loteria" id="espacio">
@@ -75,20 +161,21 @@ function mostrarError(mensaje) {
       <button id="guardar" @click="guardar()">GUARDAR</button>
     </div>
 <section id="loteria">
-<button v-for="(e, i) in boletas" :key="i" @click="modifiicarboleta(e,i)">{{e.i<10?'0'+ e.i:e.i}}</button>
+<button v-for="(e, i) in boletas" :key="i" @click="modifiicarboleta(e,i)">{{ i < 10 ? '0' + i : i }}
+</button>
 </section>
-<button id="crear" @click="crear()">Crear Talonario</button>
+<!-- {{e.i<10?'0'+ e.i:e.i}} -->
 <div class="fondo1">
     <div class="fondo">
       <div class="subtitulo">
       <h4>INFORMACION</h4>
       </div>
-      <div class="informacion">
+      <div class="informacion" style="color:black">
         <div class="premio"> <h3>🏆 {{premio}} </h3></div>
         <div class="precioVoleta"><h3>💲{{valorBoleta}}</h3> </div>
         <div class="loteria"> <h3>🏦{{ loteria}}</h3> </div>
         <div class="fecha"> <h3>🗓️{{fecha}}</h3> </div>
-        <button id="edita" @click="crear()">EDITAR<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <button id="edita" @click="editar(item, i)">EDITAR<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path fill-rule="evenodd" clip-rule="evenodd" d="M7.58579 11.9142C7.21071 12.2892 7 12.7979 7 13.3284V16C7 16.5522 7.44772 17 8 17H10.6716C11.202 17 11.7107 16.7892 12.0858 16.4142L21.5858 6.91416C22.3668 6.13311 22.3668 4.86678 21.5858 4.08573L19.9142 2.41416C19.1332 1.63311 17.8668 1.63311 17.0858 2.41416L7.58579 11.9142ZM10.6716 15H9L9 13.3284L18.5 3.82837L20.1716 5.49995L10.6716 15Z" fill="black"/>
 <path d="M10 3.99994C10 4.55223 9.55229 4.99995 9 4.99995H4L4 20H19V15C19 14.4477 19.4477 14 20 14C20.5523 14 21 14.4477 21 15V20C21 21.1045 20.1046 22 19 22H4C2.89543 22 2 21.1045 2 20V4.99995C2 3.89538 2.89543 2.99994 4 2.99994H9C9.55229 2.99994 10 3.44766 10 3.99994Z" fill="black"/>
 </svg></button>
@@ -259,6 +346,16 @@ margin-right: 2%;
 left:0%;
 margin-left: 2%;
 }
+.disponible{
+    width:9vw;
+  height:9vh;
+    position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  background-color:rgb(221, 163, 163)
+
+}
 
 @media
 (1100px <= width <= 1366px){
@@ -319,6 +416,21 @@ background-color: rgb(200, 198, 198);
 left:0%;
 margin-left: 2%;
 }
+
+.disponible{
+    width:9vw;
+  height:20vh;
+    position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%);
+  background: linear-gradient(to top right, #564ea0 0%, #2ce2e8 100%);
+}
+#adquirirb{
+  margin-top: black;
+  width:8vw;
+  height:5vh;
+}
     #crear{
  position: absolute;
   top: 50%;
@@ -376,15 +488,28 @@ box-sizing: border-box;
       display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #333;
+  background-color: #2649bc;
     }
 
     #busca, #compa{
       width:4vw;
       height: 7vh;
   align-items: center;
-  background-color: #333;
+  background-color: #411177;
     }
+
+#loteria{
+width:36vw;
+height: 60vh;
+font-size: 20px;
+display: grid;
+gap:1%;
+grid-template-columns: repeat(6, 1fr);
+overflow: scroll;
+position: absolute;
+scrollbar-color:blue;
+
+}
 
   }
 
