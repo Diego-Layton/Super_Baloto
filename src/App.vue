@@ -31,6 +31,7 @@ let direccion = ref("");
 let pagado = ref("")
 let botonBoletas=ref([])
 let selectedColor = ref("")
+let selectedColor1 = ref("")
 let seleccionacolor = ref("")
 let resultados = ref([]);
 
@@ -238,6 +239,8 @@ function exportPdf() {
       doc.save('Registro.pdf');
     }
 
+
+
 function personalizar() {
   showPersonalizar.value = !showPersonalizar.value
 }
@@ -271,6 +274,7 @@ function obtener() {
   botonBoletas.value[Iestado.value].estado = "disponible";
 
   let index = resultados.value.findIndex(item => item.boleta.includes(Iestado.value));
+
   if (index !== -1) {
     let innerIndex = resultados.value[index].boleta.indexOf(Iestado.value);
     if (innerIndex !== -1) {
@@ -338,7 +342,9 @@ function encontrarCoincidencias(Datospagada, Datosnopagada) {
 <template>
   <div class="contenedorPrincipal">
 
-    <div class="talonario">
+    <!-- <div class="talonario"> -->
+      <div :style="{ backgroundColor: selectedColor1 }" id="miDiv3" class="talonario">
+
 
       <div class="disponible" v-if="showDisponible">
 
@@ -473,7 +479,7 @@ function encontrarCoincidencias(Datospagada, Datosnopagada) {
                 d="M12 7.5C11.4477 7.5 11 7.94772 11 8.5V12C11 12.3573 11.1906 12.6874 11.5 12.866L14.9641 14.866C15.0239 14.9005 15.0858 14.9282 15.1488 14.9492C15.5901 15.0963 16.0885 14.9185 16.3301 14.5C16.6063 14.0217 16.4424 13.4101 15.9641 13.134L13 11.4227V8.5C13 7.94772 12.5523 7.5 12 7.5Z"
                 fill="black" />
             </svg>
-            <button id="liberar" v-for="(item, i) in resultados" @click="liberar(item,i)">liberar boleta</button>
+            <button id="liberar" v-for="(item, i) in resultados" :key="i" @click="liberar(item,i)">liberar boleta</button>
           </div>
           <div class="bolnopagada"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"
               xmlns="http://www.w3.org/2000/svg">
@@ -552,10 +558,9 @@ function encontrarCoincidencias(Datospagada, Datosnopagada) {
       </div>
       <section id="loteria">
         <button id="fichas" v-for="(e, i) in botonBoletas" :key="i" :class="getColorClass(e.estado)" @click="modifiicarboleta(e, i)">{{ i < 10 ? '0' + i : i }} </button>
-        <!-- <button id="fichas" v-for="(e, i) in botonBoletas" :key="i" :style="item.Iestado === 'pagada' ? 'backgroundColor:red' : 'backgroundColor:blue'" @click="modifiicarboleta(e, i)">{{ i < 10 ? '0' + i : i }} </button> -->
       </section>
       <div class="fondo1">
-          <div :style="{ backgroundColor: seleccionacolor }" id="miDiv1" class="fondo">
+          <div :style="{ backgroundColor: seleccionacolor }" id="3" class="fondo">
 
           <div class="subtitulo">
             <h4>INFORMACION</h4>
@@ -585,7 +590,7 @@ function encontrarCoincidencias(Datospagada, Datosnopagada) {
           </div>
 </div>
 
-          <div :style="{ backgroundColor: seleccionacolor }" id="miDiv1" class="accion">
+          <div :style="{ backgroundColor: seleccionacolor }" id="miDiv2" class="accion">
 
           <div class="subtitulo">
             <h5>ACCIONES</h5>
@@ -643,6 +648,11 @@ function encontrarCoincidencias(Datospagada, Datosnopagada) {
         <div class="opcionescolor">
         <label for="colorPicker">header y footer:</label>
         <input type="color" id="colorPicker" v-model="selectedColor">
+      </div>
+
+      <div class="opcionescolor">
+        <label for="colorPicker">fondo talonario</label>
+        <input type="color" id="colorPicker" v-model="selectedColor1">
       </div>
 
       <div class="opcionescolor">
@@ -736,6 +746,10 @@ function encontrarCoincidencias(Datospagada, Datosnopagada) {
 
 <style scoped>
 @media (1367px <=width <=2700px) {
+
+/* #miDiv3{
+  
+} */
 .talonario {
     width: 90vw;
     height: 90vh;
@@ -747,7 +761,7 @@ function encontrarCoincidencias(Datospagada, Datosnopagada) {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: linear-gradient(to top left, #7960e9 0%, #a84bdf 100%);
+    /* background: linear-gradient(to top left, #7960e9 0%, #a84bdf 100%); */
   }
 
   #miDiv {
@@ -969,12 +983,12 @@ function encontrarCoincidencias(Datospagada, Datosnopagada) {
 
 
   #loteria {
-    width: 36vw;
+    width: 46vw;
     height: 60vh;
-    font-size: 20px;
+    font-size: 10px;
     display: grid;
     gap: 1%;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(10, 1fr);
     overflow: scroll;
     position: absolute;
     scrollbar-width: none;
@@ -1293,12 +1307,14 @@ margin-left: 20%;
   background-color: #5971be;
 }
 
+
+
 }
 
 @media (900px <=width <=1366px) {
 
   .talonario {
-    width: 90vw;
+    width: 95vw;
     height: 90vh;
     position: absolute;
     top: 50%;
@@ -1309,7 +1325,7 @@ margin-left: 20%;
     justify-content: center;
     align-items: center;
     box-shadow: 2px 3px 3px rgb(92, 90, 90);
-    background-color: rgb(168, 168, 241);
+    /* background-color: rgb(168, 168, 241); */
 
   }
 
@@ -1499,21 +1515,23 @@ margin-left: 20%;
   }
 
   #loteria {
-    width: 36vw;
+    width: 43vw;
     height: 60vh;
-    font-size: 20px;
+    font-size: 12px;
     display: grid;
-    gap: 1%;
-    grid-template-columns: repeat(6, 1fr);
+    /* gap: 1%; */
+    grid-template-columns: repeat(10, 1fr);
     overflow: scroll;
     position: absolute;
     scrollbar-width: none;
   }
 #fichas{
   /* background-color: #5971be; */
-  border-radius: 4vmax;
+  border-radius: 2vmax;
   height: 100%;
   margin-bottom: 4%;
+  font-size: 14px;
+  font-weight: 600;
   color:black;
 }
 #fichas:hover{
@@ -1851,7 +1869,7 @@ margin-left: 20%;
   background-color: #5971be;
 }
 
-#titulopdf{
+/* #titulopdf{
   color:rgb(88, 88, 209);
   font-size: xx-large;
   font-family: Georgia, 'Times New Roman', Times, serif;
@@ -1861,7 +1879,6 @@ margin-left: 20%;
 .impresion{
   width:90%;
   height:auto;
-  /* border:2px solid black; */
   box-sizing: border-box;
 }
 
@@ -1869,7 +1886,6 @@ margin-left: 20%;
 .intro{
   width:100%;
   height:30%;
-  /* border:2px solid black; */
   display:grid;
   grid-template-columns: repeat(2, 1fr);
 
@@ -1878,7 +1894,6 @@ margin-left: 20%;
 .sorteo{
   width:80%;
   height:85%;
-  /* border:2px solid black; */
   text-align: left;
   color:black;
   font-weight: 600;
@@ -1891,7 +1906,6 @@ table{
     
   }
   th, td{
-    /* border: solid 1px #000; */
     text-align: center;
     padding:2%;
     width:10%;
@@ -1903,7 +1917,7 @@ table{
 }
 tr:nth-child(even){
     background-color: #78e46e;
-}
+} */
 
 
 }
@@ -2275,3 +2289,4 @@ box-shadow: 4px 8px 16px 0 rgba(0, 0, 0, 0.4);
 }
 }
 </style>
+
