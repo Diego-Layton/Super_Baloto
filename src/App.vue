@@ -326,6 +326,25 @@ function liberar() {
   let index = Datosnopagada.value.findIndex(item => item.boleta==Iestado.value);
 if(index!==-1){
   Datosnopagada.value.splice(index,1)
+
+let indexR = -1;
+let indexBoleta = -1;
+
+resultados.value.some((item, index) => {
+    const boletaIndex = item.boleta.indexOf(Iestado.value);
+    if (boletaIndex !== -1) {
+        indexR = index;
+        indexBoleta = boletaIndex;
+        return true;
+    }
+});
+
+if (indexR !== -1 && indexBoleta !== -1) {
+    resultados.value[indexR].boleta.splice(indexBoleta, 1);
+    console.log("Numero eliminado de item.boleta:", Iestado.value);
+} else {
+    console.log("Numero no encontrado en item.boleta.");
+}
 }
 }
 
